@@ -1,8 +1,9 @@
+import {useState} from 'react'
 import './index.css'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
-import AddPos from './AddPos' // обов'язково імпортуй AddPos
+import AddPos from './AddPos' 
 
-function Position({ name, size, price, profit, state }) {
+function Position({ name, size, price, profit, state, photo  }) {
   const stateColors = {
     ordered: 'bg-green-400',
     stock: 'bg-blue-400',
@@ -21,25 +22,31 @@ function Position({ name, size, price, profit, state }) {
           <p>Profit-{profit}</p>
         </div>
         <img
-          src="/nindza.JPG"
-          className="w-25 h-25 object-cover rounded-md"
-        />
+            src={photo}
+            alt={name}
+            className="w-24 h-24 object-cover rounded-lg"
+          />
       </div>
     </div>
   )
 }
 
-function HomePage() {
+function HomePage({ positions }) {
   const navigate = useNavigate()
 
   return (
     <div className="min-h-screen pb-24">
-      <Position name={"Salomon xa pro 3d"} size={42} price={1400} profit={500} state="ordered" />
-      <Position name={"Salomon xt Wings black"} size={43} price={1500} profit={400} state="stock" />
-      <Position name={"Salomon speedcross 44р"} size={44} price={1600} profit={600} state="sold" />
-      <Position name={"Salomon xa pro 3d"} size={42} price={1400} profit={500} state="ordered" />
-      <Position name={"Salomon xt Wings black"} size={43} price={1500} profit={400} state="stock" />
-      <Position name={"Salomon speedcross 44р"} size={44} price={1600} profit={600} state="sold" />
+      {positions.map((pos, index) => (
+        <Position
+          key={index}
+          name={pos.name}
+          size={pos.size}
+          price={pos.purchase}
+          profit={pos.profit}
+          state={pos.state}
+          photo={pos.photo}
+        />
+      ))}
 
       <button
         onClick={() => navigate('/add')}
@@ -51,11 +58,19 @@ function HomePage() {
   )
 }
 
+
 function App() {
+    
+  const [positions, setPosition] = useState([])
+
+    const addPosition=(newPos)=>{
+      setPosition((prev) => [...prev, newPos])
+    }
+  
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/add" element={<AddPos />} />
+      <Route path="/" element={<HomePage positions={positions} />} />
+      <Route path="/add" element={<AddPos addPosition={addPosition} />} />
     </Routes>
   )
 }
